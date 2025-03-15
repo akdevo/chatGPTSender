@@ -5,7 +5,7 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;  // Store your API key in an .env file
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;  // Make sure this is set!
 
 app.post('/proxy-chat', async (req, res) => {
     const { message } = req.body;
@@ -25,9 +25,12 @@ app.post('/proxy-chat', async (req, res) => {
             }
         });
 
+        console.log("OpenAI Response:", response.data); // Log full response
         res.json({ reply: response.data.choices[0].message.content });
+
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch response' });
+        console.error("OpenAI API Error:", error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'Failed to fetch response', details: error.response ? error.response.data : error.message });
     }
 });
 
